@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.artigo.livro.entity.Categoria;
@@ -20,8 +21,32 @@ public class LivroController {
 
 		Livro livro = new Livro(123L, "Controller - Spring", 1, "Vitor", Categoria.INFORMATICA,
 				Arrays.asList(Modelo.EBOOK, Modelo.FISICO));
-		
+
 		return Arrays.asList(livro, livro, livro);
+
+	}
+
+	@ResponseBody
+	@RequestMapping(name = "/livros", method = RequestMethod.POST)
+	public Livro salvar(Livro livro) {
+
+		return null;
+
+	}
+
+	@ResponseBody
+	@RequestMapping(name = "/livros", method = RequestMethod.PUT)
+	public Livro atualizar(Livro livro) {
+
+		return null;
+
+	}
+
+	@ResponseBody
+	@RequestMapping(name = "/livros", method = RequestMethod.DELETE)
+	public Livro deletar(Long isbn) {
+
+		return null;
 
 	}
 
