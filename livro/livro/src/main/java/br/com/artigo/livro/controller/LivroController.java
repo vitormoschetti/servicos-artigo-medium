@@ -23,15 +23,9 @@ public class LivroController {
 
 	@ResponseBody
 	@RequestMapping("/livros")
-	public List<Livro> listar(@RequestParam(required = false) Long isbn) {
-
-		if(isbn == null){
-			return livroRepository.findAll();
-		}else {
-			Optional<Livro> livroOpt = livroRepository.findById(isbn);
-			return Arrays.asList(livroOpt.get());
-		}
-
+	public List<Livro> listar() {
+		List<Livro> livros = livroRepository.findAll();
+		return livros;
 	}
 
 	@ResponseBody
@@ -41,5 +35,16 @@ public class LivroController {
 
 		livroRepository.save(livro);
 	}
+
+	@ResponseBody
+	@Transactional
+	@RequestMapping(path = "/livros", method = RequestMethod.PUT)
+	public void atualizar(@RequestBody Livro livro) {
+
+		livroRepository.save(livro);
+
+	}
+
+
 
 }
