@@ -1,52 +1,67 @@
 package br.com.artigo.livro.controller;
 
+import br.com.artigo.livro.controller.dto.AtualizaLivroFormDTO;
+import br.com.artigo.livro.controller.dto.DetalhesLivroDTO;
+import br.com.artigo.livro.controller.dto.LivroDTO;
+import br.com.artigo.livro.controller.dto.LivroFormDTO;
 import br.com.artigo.livro.entity.Livro;
 import br.com.artigo.livro.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
-@Controller
+@RestController
+@RequestMapping("/livros")
 public class LivroController {
 
     @Autowired
     private LivroRepository livroRepository;
 
-    @ResponseBody
-    @RequestMapping("/livros")
-    public List<Livro> listar() {
+    @GetMapping
+    public List<LivroDTO> listar() {
         List<Livro> livros = livroRepository.findAll();
-        return livros;
+        return LivroDTO.converter(livros);
     }
 
-    @ResponseBody
     @Transactional
-    @RequestMapping(path = "/livros", method = RequestMethod.POST)
-    public void salvar(@RequestBody Livro livro) {
-
+    @PostMapping
+    public LivroDTO salvar(@RequestBody LivroFormDTO form) {
+        Livro livro = form.converter();
         livroRepository.save(livro);
+        return new LivroDTO(livro);
     }
 
-    @ResponseBody
     @Transactional
-    @RequestMapping(path = "/livros", method = RequestMethod.PUT)
-    public void atualizar(@RequestBody Livro livro) {
+    @PutMapping("/{isbn}")
+    public DetalhesLivroDTO atualizar(@PathVariable Long isbn, @RequestBody AtualizaLivroFormDTO form) {
 
-        livroRepository.save(livro);
+        final Optional<Livro> optLivro = livroRepository.findById(isbn);
 
+        if (optLivro.isPresent()) {
+            Livro livro = optLivro.get();
+            form.atualiza(livro);
+            livroRepository.save(livro);
+            return new DetalhesLivroDTO(livro);
+        }
+
+        System.out.println("Livro não encontrado");
+        return null;
     }
 
-    @ResponseBody
+
     @Transactional
-    @RequestMapping(path = "/livros/{isbn}", method = RequestMethod.DELETE)
+    @DeleteMapping("/{isbn}")
     public void deletar(@PathVariable Long isbn) {
 
-        livroRepository.deleteById(isbn);
+        final Optional<Livro> optLivro = livroRepository.findById(isbn);
+
+        if (optLivro.isPresent()) {
+            livroRepository.deleteById(isbn);
+        }
 
     }
-
 
 }
